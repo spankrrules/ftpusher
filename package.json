@@ -1,0 +1,15 @@
+{
+  "name": "ftpusher",
+  "version": "1.0.0",
+  "description": "Watches folder for new files, backs them up and uploads to an ftp server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "spankrrules",
+  "license": "ISC",
+  "dependencies": {
+    "chokidar": "^1.6.1",
+    "yargs": "^6.2.0"
+  }
+}
