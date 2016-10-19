@@ -3,6 +3,7 @@ var path = require('path');
 var argv = require('yargs').argv;
 var chokidar = require('chokidar');
 var winston  = require('winston');
+var moment   = require('moment');
 
 // setup logger
 winston.add(require('winston-daily-rotate-file'), {
@@ -36,7 +37,7 @@ function fileAdded(file, event) {
 
 function moveFile(file) {
     var name = path.basename(file);
-    var moveHere = backupFolder +'/'+ name;
+    var moveHere = backupFolder +'/'+ moment().format('YYYY-MM-DD') +'/'+ name;
     fs.move(file, moveHere, { clobber: true }, function (err) {
         if (err) return winston.error(err);
         winston.info(`File moved to ${moveHere}`);
