@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "chokidar": "^1.6.1",
+    "dotenv": "^2.0.0",
     "fs-extra": "^0.30.0",
     "jsftp": "^1.5.4",
     "moment": "^2.15.1",

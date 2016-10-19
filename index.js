@@ -1,3 +1,6 @@
+// load environment config
+require('dotenv').config()
+
 var fs = require('fs-extra');
 var path = require('path');
 var argv = require('yargs').argv;
@@ -5,6 +8,12 @@ var chokidar = require('chokidar');
 var winston  = require('winston');
 var moment   = require('moment');
 var JSFtp    = require('jsftp');
+
+// initialize variables
+var REMOTE_FTP_HOST = process.env.REMOTE_FTP_HOST;
+var REMOTE_FTP_USERNAME = process.env.REMOTE_FTP_USERNAME;
+var REMOTE_FTP_PASSWORD = process.env.REMOTE_FTP_PASSWORD;
+var REMOTE_FTP_FOLDER   = process.env.REMOTE_FTP_FOLDER;
 
 
 // setup logger
@@ -27,9 +36,9 @@ var watcher = chokidar.watch(folderToWatch, {
 
 
 var ftpSettings = {
-    host: 'ftp.mpenv.com',
-    user: 'solaramc',
-    pass: 'solaramc@mpenv'
+    host: REMOTE_FTP_HOST,
+    user: REMOTE_FTP_USERNAME,
+    pass: REMOTE_FTP_PASSWORD,
 };
 
 
@@ -49,7 +58,7 @@ function sendFile(file, cb) {
     fs.readFile(file, (err, data) => {
         if (err) throw err;
 
-        var location = './samcData/'+ path.basename(file);
+        var location = REMOTE_FTP_FOLDER +'/'+ path.basename(file);
         var ftp = new JSFtp(ftpSettings);
         ftp.put(data, location, (err) => {
             if (err) throw err;
