@@ -26,11 +26,11 @@ var watcher = chokidar.watch(folderToWatch, {
 });
 
 
-var ftp = new JSFtp({
+var ftpSettings = {
     host: 'ftp.mpenv.com',
     user: 'solaramc',
     pass: 'solaramc@mpenv'
-});
+};
 
 
 
@@ -42,7 +42,7 @@ watcher.on('add', fileAdded);
 ////////////////////
 function fileAdded(file, event) {
     winston.info(`File ${file} has been added`);
-    sendFile(file, moveFile(file));
+    sendFile(file, moveFile);
 }
 
 function sendFile(file, cb) {
@@ -50,10 +50,11 @@ function sendFile(file, cb) {
         if (err) throw err;
 
         var location = './samcData/'+ path.basename(file);
+        var ftp = new JSFtp(ftpSettings);
         ftp.put(data, location, (err) => {
             if (err) throw err;
             winston.info('file uploaded to '+ location);
-            if(cb) cb();
+            if(cb) cb(file);
         });
     });
 }
