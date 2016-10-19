@@ -4,6 +4,8 @@ var argv = require('yargs').argv;
 var chokidar = require('chokidar');
 var winston  = require('winston');
 var moment   = require('moment');
+var JSFtp    = require('jsftp');
+
 
 // setup logger
 winston.add(require('winston-daily-rotate-file'), {
@@ -24,6 +26,14 @@ var watcher = chokidar.watch(folderToWatch, {
 });
 
 
+var ftp = new JSFtp({
+    host: 'ftp.mpenv.com',
+    user: 'solaramc',
+    pass: 'solaramc@mpenv'
+});
+
+
+
 // start watching for files
 winston.info('Watching folder: ', folderToWatch);
 watcher.on('add', fileAdded);
@@ -32,14 +42,29 @@ watcher.on('add', fileAdded);
 ////////////////////
 function fileAdded(file, event) {
     winston.info(`File ${file} has been added`);
-    moveFile(file);
+    sendFile(file, moveFile(file));
 }
 
-function moveFile(file) {
+function sendFile(file, cb) {
+    fs.readFile(file, (err, data) => {
+        if (err) throw err;
+
+        var location = './samcData/'+ path.basename(file);
+        ftp.put(data, location, (err) => {
+            if (err) throw err;
+            winston.info('file uploaded to '+ location);
+            if(cb) cb();
+        });
+    });
+}
+
+function moveFile(file, cb) {
     var name = path.basename(file);
     var moveHere = backupFolder +'/'+ moment().format('YYYY-MM-DD') +'/'+ name;
-    fs.move(file, moveHere, { clobber: true }, function (err) {
-        if (err) return winston.error(err);
+
+    fs.move(file, moveHere, { clobber: true }, (err) => {
+        if (err) throw err;
         winston.info(`File moved to ${moveHere}`);
+        if(cb) cb();
     });
 }
